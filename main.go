@@ -41,10 +41,10 @@ type upsInfo struct {
 // See SVN code at https://sourceforge.net/p/apcupsd/svn/HEAD/tree/trunk/src/lib/apcstatus.c#l166 for
 // list of statuses.
 var statusList = []string{
-	"online",
-	"onbatt",
 	"trim",
 	"boost",
+	"online",
+	"onbatt",
 	"overload",
 	"lowbatt",
 	"replacebatt",
@@ -208,7 +208,7 @@ func collectUPSData(upsAddr *string) error {
 	log.Printf("%+v", info)
 
 	for i, stat := range statusList {
-		if stat == info.status {
+		if stat === info.status {
 			status.WithLabelValues(info.hostname, info.upsName, stat).Set(1)
 			statusNumeric.WithLabelValues(info.hostname, info.upsName).Set(float64(i))
 		} else {
