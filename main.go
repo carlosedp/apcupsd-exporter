@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -24,9 +25,11 @@ type upsInfo struct {
 	nomPower             float64
 	batteryChargePercent float64
 
-	timeOnBattery    time.Duration
-	timeLeft         time.Duration
-	cumTimeOnBattery time.Duration
+	timeOnBattery           time.Duration
+	timeLeft                time.Duration
+	cumTimeOnBattery        time.Duration
+	timeTransferToBattery   time.Time
+	timeTransferFromBattery time.Time
 
 	loadPercent float64
 
@@ -151,7 +154,7 @@ var (
 		Name: "apcups_numtransfers",
 		Help: "Number of transfers to battery since apcupsd startup.",
 	},
-		append(labels, "lasttransfer"),
+		append(labels, "lasttransfer", "timetransfertobattery", "timetransferfrombattery"),
 	)
 )
 
@@ -243,7 +246,7 @@ func collectUPSData(upsAddr *string) error {
 	nomBatteryVoltage.WithLabelValues(info.hostname, info.upsName).Set(info.nomBatteryVoltage)
 	nomInputVoltage.WithLabelValues(info.hostname, info.upsName).Set(info.nomInputVoltage)
 
-	numTransfers.WithLabelValues(info.hostname, info.upsName, info.lastTransfer).Set(info.numTransfers)
+	numTransfers.WithLabelValues(info.hostname, info.upsName, info.lastTransfer, info.timeTransferToBattery.Format("2006-01-02 15:04:05 -0700"), info.timeTransferFromBattery.Format("2006-01-02 15:04:05 -0700")).Set(info.numTransfers)
 
 	return nil
 }
@@ -319,6 +322,14 @@ func transformData(ups map[string]string) (*upsInfo, error) {
 	upsInfo.upsModel = ups["MODEL"]
 	upsInfo.lastTransfer = ups["LASTXFER"]
 
+	const timeForm = "2006-01-02 15:04:05 -0700"
+	t1, _ := time.Parse(timeForm, ups["XONBATT"])
+
+	upsInfo.timeTransferToBattery = t1
+
+	t2, _ := time.Parse(timeForm, ups["XOFFBATT"])
+	upsInfo.timeTransferFromBattery = t2
+
 	if xf, err := parseUnits(ups["NUMXFERS"]); err != nil {
 		return nil, err
 	} else {
@@ -375,9 +386,12 @@ func retrieveData(hostPort string) (map[string]string, error) {
 			if _, err = conn.Read(data); err != nil {
 				log.Panicf("Error reading size from incoming reader: %+v", err)
 			}
-			chunks := strings.Split(string(data), ":")
-			upsData[strings.TrimSpace(chunks[0])] = strings.TrimSpace(chunks[1])
 
+			var re = regexp.MustCompile(`(?m)^([A-Z]*)\s*:\s*(.*)`)
+			matches := re.FindStringSubmatch(string(data))
+			if len(matches) >= 3 {
+				upsData[strings.TrimSpace(matches[1])] = strings.TrimSpace(matches[2])
+			}
 		} else {
 			complete = true
 		}
