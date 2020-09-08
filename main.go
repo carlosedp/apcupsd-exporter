@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // map[VERSION:3.14.10 (13 September 2011) debian MINTIMEL:3 Minutes BATTDATE:2014-10-21 END APC:2016-08-30 17 NUMXFERS:0 NOMPOWER:480 Watts NOMINV:230 Volts FIRMWARE:925.T1 .I USB FW APC:001,036,0923 STATUS:ONLINE BCHARGE:100.0 Percent TONBATT:0 seconds HOSTNAME:beaker.murf.org CABLE:USB Cable TIMELEFT:104.6 Minutes SELFTEST:NO ALARMDEL:30 seconds STATFLAG:0x07000008 Status Flag DATE:2016-08-30 17 UPSMODE:Stand Alone MAXTIME:0 Seconds SENSE:Medium HITRANS:280.0 Volts LASTXFER:Unacceptable line voltage changes XOFFBATT:N/A SERIALNO:3B1443X05291 UPSNAME:backups-950 DRIVER:USB UPS Driver STARTTIME:2016-08-30 16 LOADPCT:5.0 Percent Load Capacity MBATTCHG:5 Percent LOTRANS:155.0 Volts BATTV:13.5 Volts CUMONBATT:0 seconds MODEL:Back-UPS XS 950U LINEV:242.0 Volts NOMBATTV:12.0 Volts
@@ -34,8 +35,12 @@ type upsInfo struct {
 	nomBatteryVoltage float64
 	nomInputVoltage   float64
 
-	hostname string
-	upsName  string
+	hostname     string
+	upsName      string
+	upsModel     string
+	lastTransfer string
+	batteryDate  string
+	numTransfers float64
 }
 
 // See SVN code at https://sourceforge.net/p/apcupsd/svn/HEAD/tree/trunk/src/lib/apcstatus.c#l166 for
@@ -62,14 +67,7 @@ var (
 		Name: "apcups_status",
 		Help: "Current status of UPS",
 	},
-		append(labels, "status"),
-	)
-
-	statusNumeric = prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: "apcups_status_numeric",
-		Help: "Current status of UPS represented as integer",
-	},
-		labels,
+		append(labels, "status", "model", "batterydate"),
 	)
 
 	nominalPower = prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -148,6 +146,13 @@ var (
 	},
 		labels,
 	)
+
+	numTransfers = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "apcups_numtransfers",
+		Help: "Number of transfers to battery since apcupsd startup.",
+	},
+		append(labels, "lasttransfer"),
+	)
 )
 
 func main() {
@@ -161,7 +166,6 @@ func main() {
 	log.Printf("Metric listener at: %s", *addr)
 
 	prometheus.MustRegister(status)
-	prometheus.MustRegister(statusNumeric)
 	prometheus.MustRegister(nominalPower)
 	prometheus.MustRegister(batteryChargePercent)
 	prometheus.MustRegister(timeOnBattery)
@@ -173,10 +177,11 @@ func main() {
 	prometheus.MustRegister(nomBatteryVoltage)
 	prometheus.MustRegister(nomInputVoltage)
 	prometheus.MustRegister(collectSeconds)
+	prometheus.MustRegister(numTransfers)
 
 	go func() {
 		c := time.Tick(10 * time.Second)
-		for _ = range c {
+		for range c {
 			if err := collectUPSData(upsAddr); err != nil {
 				log.Printf("Error collecting UPS data: %+v", err)
 			}
@@ -184,8 +189,15 @@ func main() {
 
 	}()
 
-	http.Handle("/metrics", prometheus.Handler())
-	http.ListenAndServe(*addr, nil)
+	http.Handle("/metrics", promhttp.HandlerFor(
+		prometheus.DefaultGatherer,
+		promhttp.HandlerOpts{
+			// Opt into OpenMetrics to support exemplars.
+			EnableOpenMetrics: true,
+		},
+	))
+	log.Fatal(http.ListenAndServe(*addr, nil))
+
 }
 
 func collectUPSData(upsAddr *string) error {
@@ -207,16 +219,15 @@ func collectUPSData(upsAddr *string) error {
 
 	log.Printf("%+v", info)
 
-	for i, stat := range statusList {
-		if stat === info.status {
-			status.WithLabelValues(info.hostname, info.upsName, stat).Set(1)
-			statusNumeric.WithLabelValues(info.hostname, info.upsName).Set(float64(i))
+	for _, stat := range statusList {
+		if stat == info.status {
+			status.WithLabelValues(info.hostname, info.upsName, stat, info.upsModel, info.batteryDate).Set(1)
 		} else {
-			status.WithLabelValues(info.hostname, info.upsName, stat).Set(0)
+			status.WithLabelValues(info.hostname, info.upsName, stat, info.upsModel, info.batteryDate).Set(0)
 		}
 	}
 
-	status.WithLabelValues(info.hostname, info.upsName, info.status).Set(1)
+	// status.WithLabelValues(info.hostname, info.upsName, info.status, info.upsModel, info.batteryDate).Set(1)
 
 	nominalPower.WithLabelValues(info.hostname, info.upsName).Set(info.nomPower)
 
@@ -231,6 +242,8 @@ func collectUPSData(upsAddr *string) error {
 	lineVoltage.WithLabelValues(info.hostname, info.upsName).Set(info.lineVoltage)
 	nomBatteryVoltage.WithLabelValues(info.hostname, info.upsName).Set(info.nomBatteryVoltage)
 	nomInputVoltage.WithLabelValues(info.hostname, info.upsName).Set(info.nomInputVoltage)
+
+	numTransfers.WithLabelValues(info.hostname, info.upsName, info.lastTransfer).Set(info.numTransfers)
 
 	return nil
 }
@@ -303,15 +316,21 @@ func transformData(ups map[string]string) (*upsInfo, error) {
 
 	upsInfo.hostname = ups["HOSTNAME"]
 	upsInfo.upsName = ups["UPSNAME"]
+	upsInfo.upsModel = ups["MODEL"]
+	upsInfo.lastTransfer = ups["LASTXFER"]
+
+	if xf, err := parseUnits(ups["NUMXFERS"]); err != nil {
+		return nil, err
+	} else {
+		upsInfo.numTransfers = xf
+	}
+	upsInfo.batteryDate = ups["BATTDATE"]
 
 	return upsInfo, nil
 }
 
 // parse time strings like 30 seconds or 1.25 minutes
 func parseTime(t string) (time.Duration, error) {
-	if t == ""{
-		return 0, nil
-	}
 	chunks := strings.Split(t, " ")
 	fmtStr := chunks[0] + string(strings.ToLower(chunks[1])[0])
 	return time.ParseDuration(fmtStr)
@@ -319,9 +338,6 @@ func parseTime(t string) (time.Duration, error) {
 
 // parse generic units, splitting of units name and converting to float
 func parseUnits(v string) (float64, error) {
-	if v == ""{
-		return 0, nil
-	}
 	return strconv.ParseFloat(strings.Split(v, " ")[0], 32)
 }
 

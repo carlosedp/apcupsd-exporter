@@ -1,0 +1,19 @@
+# Application container
+FROM alpine:latest
+ARG TARGETARCH
+ARG TARGETOS
+
+ENV TARGETOS ${TARGETOS}
+ENV TARGETARCH ${TARGETARCH}
+
+RUN apk update && apk add --no-cache apcupsd
+
+ADD apcupsd.conf /etc/apcupsd/apcupsd.conf
+#ADD doshutdown /etc/apcupsd/doshutdown
+ADD /apcupsd-exporter-$TARGETOS-$TARGETARCH /ups-exporter
+
+ADD docker-entrypoint.sh /
+
+EXPOSE 9099
+
+CMD [ "/docker-entrypoint.sh" ]

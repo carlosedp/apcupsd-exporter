@@ -1,44 +1,77 @@
 # apcups-exporter
-Prometheus Exporter for APC UPS hardware via apcupsd
 
-## UPS Status
+Prometheus Exporter for APC UPS via apcupsd.
 
-The exporter lists two different types of status metric to be as flexible as possible.
+The exporter connects to a host running [`apcupsd`](http://www.apcupsd.org/). The exporter container can also be run in the same host.
 
-1. `apc_status` has a label value of "status" which includes all the possible apcupsd status values, currently this results in the following for an "online" UPS:
+## Configure the apcupsd daemon
 
-```
-# HELP apcups_status Current status of UPS
-# TYPE apcups_status gauge
-apcups_status{hostname="beaker.murf.org",status="boost",upsname="backups-950"} 0
-apcups_status{hostname="beaker.murf.org",status="commlost",upsname="backups-950"} 0
-apcups_status{hostname="beaker.murf.org",status="lowbatt",upsname="backups-950"} 0
-apcups_status{hostname="beaker.murf.org",status="nobatt",upsname="backups-950"} 0
-apcups_status{hostname="beaker.murf.org",status="onbatt",upsname="backups-950"} 0
-apcups_status{hostname="beaker.murf.org",status="online",upsname="backups-950"} 1
-apcups_status{hostname="beaker.murf.org",status="overload",upsname="backups-950"} 0
-apcups_status{hostname="beaker.murf.org",status="replacebatt",upsname="backups-950"} 0
-apcups_status{hostname="beaker.murf.org",status="shutting down",upsname="backups-950"} 0
-apcups_status{hostname="beaker.murf.org",status="slave",upsname="backups-950"} 0
-apcups_status{hostname="beaker.murf.org",status="slavedown",upsname="backups-950"} 0
-apcups_status{hostname="beaker.murf.org",status="trim",upsname="backups-950"} 0
+In the host where the UPS is connected, install and configure the `apcupsd` daemon according to your UPS parameters (Device type and connection). Basic configuration for USB UPSs below:
+
+Install:
+
+```sh
+sudo apt update && sudo apt install -y apcupsd
+# Your Kernel needs CONFIG_USB_HIDDEV=y enabled. Check with zcat /proc/config.gz|grep HIDDEV
 ```
 
-2. `apc_status_numeric` is a single metric with value as per the following status table
+File `/etc/apcupsd/apcupsd.conf`:
 
-| status        | value |
-|---------------|-------|
-| online        | 0     |
-| onbatt        | 1     |
-| trim          | 2     |
-| boost         | 3     |
-| overload      | 4     |
-| lowbatt       | 5     |
-| replacebatt   | 6     |
-| nobatt        | 7     |
-| slave         | 8     |
-| slavedown     | 9     |
-| commlost      | 10    |
-| shutting down | 11    |
+```conf
+UPSCABLE usb
+UPSTYPE usb
+DEVICE
+NISIP 0.0.0.0
+```
 
+File: `/etc/default/apcupsd`:
 
+```conf
+ISCONFIGURED=yes
+```
+
+Enable and restart the daemon
+
+```sh
+#Enable and start the daemon
+sudo systemctl enable apcupsd
+sudo systemctl restart apcupsd
+```
+
+## Deploy the apcupsd-exporter
+
+You can run the `apcupsd-exporter` in a container locally in the same machine running the `apcupsd` daeeon. Container needs to run in host network to access localhost daemon. Port has been overriden in command line with command `-listen-address :9099` at the end.
+
+```sh
+docker run --name apcupsd -d --net=host carlosedp/apcupsd-exporter:latest -listen-address :9099
+```
+
+Or run the exporter container on a different machine pointing to the `apcupsd` daemon address and port.
+
+```sh
+docker run --name apcupsd -d -p 8080:8080 carlosedp/apcupsd-exporter:latest -ups-address "192.168.1.10:3551" -listen-address :9099
+```
+
+## Configuring Prometheus to scrape metrics
+
+Sample Prometheus configuration (replace your exporter IP). Add to your `prometheus.yaml` file:
+
+```yaml
+...
+  - job_name: 'apcupsd'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+        - '192.168.1.15'
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 192.168.1.15:9099
+```
+
+Check the Prometheus targets if the endpoint is being scraped.
+
+And import the `apcups-dashboard.json` into your Grafana Deployment.
