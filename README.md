@@ -4,6 +4,8 @@ Prometheus Exporter for APC UPS via apcupsd.
 
 The exporter connects to a host running [`apcupsd`](http://www.apcupsd.org/). The exporter container can also be run in the same host.
 
+![Dashboard](img/ups-dashboard.jpeg)
+
 ## Configure the apcupsd daemon
 
 In the host where the UPS is connected, install and configure the `apcupsd` daemon according to your UPS parameters (Device type and connection). Basic configuration for USB UPSs below:
@@ -73,5 +75,7 @@ Sample Prometheus configuration (replace your exporter IP). Add to your `prometh
 ```
 
 Check the Prometheus targets if the endpoint is being scraped.
+
+![Prometheus Target](img/Prom-ups.png)
 
 And import the `apcups-dashboard.json` into your Grafana Deployment.
