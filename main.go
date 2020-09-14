@@ -49,9 +49,9 @@ type upsInfo struct {
 // See SVN code at https://sourceforge.net/p/apcupsd/svn/HEAD/tree/trunk/src/lib/apcstatus.c#l166 for
 // list of statuses.
 var statusList = []string{
-	"trim",
-	"boost",
 	"online",
+	"boost",
+	"trim",
 	"onbatt",
 	"overload",
 	"lowbatt",
@@ -68,6 +68,13 @@ var (
 
 	status = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "apcups_status",
+		Help: "Current status of UPS",
+	},
+		append(labels, "status", "model", "batterydate"),
+	)
+
+	statusNumeric = prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Name: "apc_status_numeric",
 		Help: "Current status of UPS",
 	},
 		append(labels, "status", "model", "batterydate"),
@@ -169,6 +176,7 @@ func main() {
 	log.Printf("Metric listener at: %s", *addr)
 
 	prometheus.MustRegister(status)
+	prometheus.MustRegister(statusNumeric)
 	prometheus.MustRegister(nominalPower)
 	prometheus.MustRegister(batteryChargePercent)
 	prometheus.MustRegister(timeOnBattery)
@@ -222,9 +230,11 @@ func collectUPSData(upsAddr *string) error {
 
 	log.Printf("%+v", info)
 
-	for _, stat := range statusList {
+	for i, stat := range statusList {
 		if stat == info.status {
 			status.WithLabelValues(info.hostname, info.upsName, stat, info.upsModel, info.batteryDate).Set(1)
+			statusNumeric.Reset()
+			statusNumeric.WithLabelValues(info.hostname, info.upsName, stat, info.upsModel, info.batteryDate).Set(float64(i))
 		} else {
 			status.WithLabelValues(info.hostname, info.upsName, stat, info.upsModel, info.batteryDate).Set(0)
 		}
@@ -246,6 +256,7 @@ func collectUPSData(upsAddr *string) error {
 	nomBatteryVoltage.WithLabelValues(info.hostname, info.upsName).Set(info.nomBatteryVoltage)
 	nomInputVoltage.WithLabelValues(info.hostname, info.upsName).Set(info.nomInputVoltage)
 
+	numTransfers.Reset()
 	numTransfers.WithLabelValues(info.hostname, info.upsName, info.lastTransfer, info.timeTransferToBattery.Format("2006-01-02 15:04:05 -0700"), info.timeTransferFromBattery.Format("2006-01-02 15:04:05 -0700")).Set(info.numTransfers)
 
 	return nil
@@ -402,5 +413,4 @@ func retrieveData(hostPort string) (map[string]string, error) {
 	}
 
 	return upsData, nil
-
 }

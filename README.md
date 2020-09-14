@@ -79,3 +79,28 @@ Check the Prometheus targets if the endpoint is being scraped.
 ![Prometheus Target](img/Prom-ups.png)
 
 And import the `apcups-dashboard.json` into your Grafana Deployment.
+
+
+## UPS Status
+
+The exporter lists two different types of status metric to be as flexible as possible.
+
+1. `apc_status` has a label value of "status" which includes all the possible apcupsd status values, currently this results in the following for an "online" UPS:
+
+
+2. `apc_status_numeric` is a single metric with value as per the following status table
+
+| status        | value |
+| ------------- | ----- |
+| online        | 0     |
+| boost         | 1     |
+| trim          | 2     |
+| onbatt        | 3     |
+| overload      | 4     |
+| lowbatt       | 5     |
+| replacebatt   | 6     |
+| nobatt        | 7     |
+| slave         | 8     |
+| slavedown     | 9     |
+| commlost      | 10    |
+| shutting down | 11    |
