@@ -20,6 +20,7 @@ sudo apt update && sudo apt install -y apcupsd
 File `/etc/apcupsd/apcupsd.conf`:
 
 ```conf
+UPSNAME Lab-UPS-1
 UPSCABLE usb
 UPSTYPE usb
 DEVICE
@@ -48,10 +49,13 @@ You can run the `apcupsd-exporter` in a container locally in the same machine ru
 docker run --name apcupsd -d --net=host carlosedp/apcupsd-exporter:latest -listen-address :9099
 ```
 
-Or run the exporter container on a different machine pointing to the `apcupsd` daemon address and port.
+Or run the exporter container on a different machine pointing to the `apcupsd` daemon address and port using HTTP parameters.
 
 ```sh
-docker run --name apcupsd -d -p 8080:8080 carlosedp/apcupsd-exporter:latest -ups-address "192.168.1.10:3551" -listen-address :9099
+docker run --name apcupsd -d -p 9099:9099 carlosedp/apcupsd-exporter:latest -listen-address :9099
+
+# Then curl passing parameters:
+curl http://localhost:9099/apcupsd?target=192.168.1.15&port=3551
 ```
 
 ## Configuring Prometheus to scrape metrics
@@ -61,17 +65,19 @@ Sample Prometheus configuration (replace your exporter IP). Add to your `prometh
 ```yaml
 ...
   - job_name: 'apcupsd'
-    metrics_path: '/metrics'
     static_configs:
       - targets:
-        - '192.168.1.15'
+        - 192.168.1.15 # host running apcupsd for a UPS
+    metrics_path: /apcupsd
+    params:
+      port: [3551]
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 192.168.1.15:9099
+        replacement: 'ups-exporter:8080'  # APCUPSD exporter address
 ```
 
 Check the Prometheus targets if the endpoint is being scraped.
@@ -93,14 +99,15 @@ The exporter lists two different types of status metric to be as flexible as pos
 | status        | value |
 | ------------- | ----- |
 | online        | 0     |
-| boost         | 1     |
-| trim          | 2     |
-| onbatt        | 3     |
-| overload      | 4     |
-| lowbatt       | 5     |
-| replacebatt   | 6     |
-| nobatt        | 7     |
-| slave         | 8     |
-| slavedown     | 9     |
-| commlost      | 10    |
-| shutting down | 11    |
+| trim online   | 1     |
+| boost         | 2     |
+| trim          | 3     |
+| onbatt        | 4     |
+| overload      | 5     |
+| lowbatt       | 6     |
+| replacebatt   | 7     |
+| nobatt        | 8     |
+| slave         | 9     |
+| slavedown     | 10    |
+| commlost      | 11    |
+| shutting down | 12    |
