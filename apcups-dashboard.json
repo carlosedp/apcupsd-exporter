@@ -1,39 +1,218 @@
 {
   "annotations": {
-    "list": [{
-      "builtIn": 1,
-      "datasource": "-- Grafana --",
-      "enable": true,
-      "hide": true,
-      "iconColor": "rgba(0, 211, 255, 1)",
-      "name": "Annotations & Alerts",
-      "type": "dashboard"
-    }]
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
   },
   "description": "Dashboard for single APC UPS",
   "editable": true,
   "gnetId": 4191,
   "graphTooltip": 0,
-  "id": 11,
+  "iteration": 1609968849763,
   "links": [],
-  "panels": [{
+  "panels": [
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 23,
+      "panels": [],
+      "repeat": "upsname",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "title": "UPS - $upsname",
+      "type": "row"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "max": 100,
+          "min": 0,
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 25
+              },
+              {
+                "color": "green",
+                "value": 50
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 0,
+        "y": 1
+      },
+      "id": 6,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "apcups_battery_charge_percent{upsname=\"$upsname\"}",
+          "format": "time_series",
+          "interval": "10s",
+          "intervalFactor": 1,
+          "legendFormat": "{{ }}",
+          "refId": "A",
+          "step": 10
+        }
+      ],
+      "title": "Battery Charge",
+      "type": "gauge"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [],
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 8,
+        "x": 8,
+        "y": 1
+      },
+      "id": 21,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "textMode": "name"
+      },
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "apc_status_numeric{upsname=\"$upsname\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{ model }}",
+          "refId": "A"
+        }
+      ],
+      "title": "UPS Model",
+      "type": "stat"
+    },
+    {
       "cacheTimeout": null,
       "datasource": null,
       "fieldConfig": {
         "defaults": {
           "custom": {},
           "decimals": 0,
-          "mappings": [{
-            "id": 0,
-            "op": "=",
-            "text": "N/A",
-            "type": 1,
-            "value": "null"
-          }],
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
           "nullValueMode": "connected",
           "thresholds": {
             "mode": "percentage",
-            "steps": [{
+            "steps": [
+              {
                 "color": "green",
                 "value": null
               },
@@ -54,8 +233,8 @@
       "gridPos": {
         "h": 6,
         "w": 8,
-        "x": 0,
-        "y": 0
+        "x": 16,
+        "y": 1
       },
       "id": 12,
       "interval": null,
@@ -73,16 +252,25 @@
         "showThresholdLabels": true,
         "showThresholdMarkers": true
       },
-      "pluginVersion": "7.1.4",
-      "targets": [{
-        "expr": "(apcups_nominal_power_watts*(apcups_load_percent/100)) / apcups_nominal_power_watts",
-        "format": "time_series",
-        "interval": "10s",
-        "intervalFactor": 1,
-        "legendFormat": "{{ }}",
-        "refId": "A",
-        "step": 10
-      }],
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "(apcups_nominal_power_watts{upsname=\"$upsname\"}*(apcups_load_percent{upsname=\"$upsname\"}/100)) / apcups_nominal_power_watts{upsname=\"$upsname\"}",
+          "format": "time_series",
+          "interval": "10s",
+          "intervalFactor": 1,
+          "legendFormat": "{{ }}",
+          "refId": "A",
+          "step": 10
+        }
+      ],
       "title": "Load Percent",
       "type": "gauge"
     },
@@ -96,20 +284,30 @@
           "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
-            "steps": [{
-              "color": "green",
-              "value": null
-            }]
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 2
+              }
+            ]
           },
           "unit": "none"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 3,
         "w": 8,
         "x": 8,
-        "y": 0
+        "y": 4
       },
       "id": 8,
       "interval": null,
@@ -129,184 +327,110 @@
         },
         "textMode": "name"
       },
-      "pluginVersion": "7.1.4",
-      "targets": [{
-        "expr": "apcups_status == 1",
-        "format": "time_series",
-        "hide": false,
-        "instant": true,
-        "interval": "",
-        "intervalFactor": 1,
-        "legendFormat": "{{ status }}",
-        "refId": "A"
-      }],
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "apc_status_numeric{upsname=\"$upsname\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{ status }}",
+          "refId": "A"
+        }
+      ],
       "title": "UPS Status",
       "type": "stat"
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": null,
-      "editable": true,
-      "error": false,
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "format": "percent",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": true,
-        "thresholdLabels": true,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 8,
-        "x": 16,
-        "y": 0
-      },
-      "id": 6,
-      "interval": null,
-      "isNew": true,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [{
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [{
-        "from": "null",
-        "text": "N/A",
-        "to": "null"
-      }],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
-      },
-      "tableColumn": "apcups_battery_charge_percent{hostname=\"OdroidN2\", instance=\"192.168.1.15\", job=\"apcupsd\", upsname=\"OdroidN2\"}",
-      "targets": [{
-        "expr": "apcups_battery_charge_percent",
-        "format": "time_series",
-        "interval": "10s",
-        "intervalFactor": 1,
-        "legendFormat": "",
-        "refId": "A",
-        "step": 10
-      }],
-      "thresholds": "25,50",
-      "title": "Battery Charge",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [{
-        "op": "=",
-        "text": "N/A",
-        "value": "null"
-      }],
-      "valueName": "current"
-    },
-    {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [
-        "#d44a3a",
-        "rgba(237, 129, 40, 0.89)",
-        "#299c46"
-      ],
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#d44a3a",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 2
+              },
+              {
+                "color": "green",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "m"
         },
         "overrides": []
-      },
-      "format": "m",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 6,
         "w": 5,
         "x": 0,
-        "y": 6
+        "y": 7
       },
       "id": 13,
       "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [{
-          "name": "value to text",
-          "value": 1
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
         {
-          "name": "range to text",
-          "value": 2
+          "expr": "apcups_time_left_seconds{upsname=\"$upsname\"} / 60",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "refId": "A"
         }
       ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [{
-        "from": "null",
-        "text": "N/A",
-        "to": "null"
-      }],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
-      },
-      "tableColumn": "{hostname=\"OdroidN2\", instance=\"192.168.1.15\", job=\"apcupsd\", upsname=\"OdroidN2\"}",
-      "targets": [{
-        "expr": "apcups_time_left_seconds / 60",
-        "format": "time_series",
-        "intervalFactor": 2,
-        "legendFormat": "",
-        "refId": "A"
-      }],
-      "thresholds": "2,5",
       "title": "Battery Time Left",
-      "type": "singlestat",
-      "valueFontSize": "150%",
-      "valueMaps": [{
-        "op": "=",
-        "text": "N/A",
-        "value": "null"
-      }],
-      "valueName": "current"
+      "type": "stat"
     },
     {
       "aliasColors": {},
@@ -326,7 +450,7 @@
         "h": 6,
         "w": 13,
         "x": 5,
-        "y": 6
+        "y": 7
       },
       "hiddenSeries": false,
       "id": 1,
@@ -343,24 +467,36 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.4",
+      "pluginVersion": "7.3.6",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "expr": "apcups_battery_charge_percent",
-        "format": "time_series",
-        "instant": false,
-        "interval": "",
-        "intervalFactor": 2,
-        "legendFormat": "Battery",
-        "refId": "A"
-      }],
+      "targets": [
+        {
+          "expr": "apcups_battery_charge_percent{upsname=\"$upsname\"}",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "Battery",
+          "refId": "A"
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -379,7 +515,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "decimals": null,
           "format": "percent",
           "label": null,
@@ -408,20 +545,24 @@
       "fieldConfig": {
         "defaults": {
           "custom": {},
-          "mappings": [{
-            "id": 0,
-            "op": "=",
-            "text": "N/A",
-            "type": 1,
-            "value": "null"
-          }],
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
           "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
-            "steps": [{
-              "color": "green",
-              "value": null
-            }]
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
           },
           "unit": "watt"
         },
@@ -431,7 +572,7 @@
         "h": 3,
         "w": 6,
         "x": 18,
-        "y": 6
+        "y": 7
       },
       "id": 10,
       "interval": null,
@@ -446,20 +587,30 @@
           "calcs": [
             "mean"
           ],
-          "fields": "/^{hostname=\"OdroidN2\", instance=\"192.168.1.15\", job=\"apcupsd\", upsname=\"OdroidN2\"}$/",
+          "fields": "",
           "values": false
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.1.4",
-      "targets": [{
-        "expr": "apcups_nominal_power_watts*(apcups_load_percent/100)",
-        "format": "time_series",
-        "instant": true,
-        "intervalFactor": 1,
-        "legendFormat": "",
-        "refId": "A"
-      }],
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "apcups_nominal_power_watts{upsname=\"$upsname\"}*(apcups_load_percent{upsname=\"$upsname\"}/100)",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
       "title": "Current UPS Load",
       "type": "stat"
     },
@@ -469,20 +620,24 @@
       "fieldConfig": {
         "defaults": {
           "custom": {},
-          "mappings": [{
-            "id": 0,
-            "op": "=",
-            "text": "N/A",
-            "type": 1,
-            "value": "null"
-          }],
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
           "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
-            "steps": [{
-              "color": "green",
-              "value": null
-            }]
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
           },
           "unit": "watt"
         },
@@ -492,7 +647,7 @@
         "h": 3,
         "w": 6,
         "x": 18,
-        "y": 9
+        "y": 10
       },
       "id": 11,
       "interval": null,
@@ -507,20 +662,30 @@
           "calcs": [
             "mean"
           ],
-          "fields": "/^{hostname=\"OdroidN2\", instance=\"192.168.1.15\", job=\"apcupsd\", upsname=\"OdroidN2\"}$/",
+          "fields": "",
           "values": false
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.1.4",
-      "targets": [{
-        "expr": "apcups_nominal_power_watts*(apcups_load_percent/100)",
-        "format": "time_series",
-        "instant": false,
-        "intervalFactor": 1,
-        "legendFormat": "",
-        "refId": "A"
-      }],
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "apcups_nominal_power_watts{upsname=\"$upsname\"}*(avg_over_time(apcups_load_percent{upsname=\"$upsname\"}[$__interval])/100)",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
       "title": "Average UPS Load",
       "type": "stat"
     },
@@ -530,20 +695,24 @@
       "fieldConfig": {
         "defaults": {
           "custom": {},
-          "mappings": [{
-            "id": 0,
-            "op": "=",
-            "text": "N/A",
-            "type": 1,
-            "value": "null"
-          }],
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
           "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
-            "steps": [{
-              "color": "green",
-              "value": null
-            }]
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
           },
           "unit": "none"
         },
@@ -553,7 +722,7 @@
         "h": 3,
         "w": 4,
         "x": 0,
-        "y": 12
+        "y": 13
       },
       "id": 15,
       "interval": null,
@@ -573,16 +742,25 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.1.4",
-      "targets": [{
-        "expr": "apcups_numtransfers",
-        "format": "time_series",
-        "instant": true,
-        "interval": "",
-        "intervalFactor": 2,
-        "legendFormat": "",
-        "refId": "A"
-      }],
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "apcups_numtransfers{upsname=\"$upsname\"}",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
       "title": "Battery Transfers",
       "type": "stat"
     },
@@ -592,20 +770,24 @@
       "fieldConfig": {
         "defaults": {
           "custom": {},
-          "mappings": [{
-            "id": 0,
-            "op": "=",
-            "text": "N/A",
-            "type": 1,
-            "value": "null"
-          }],
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
           "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
-            "steps": [{
-              "color": "green",
-              "value": null
-            }]
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
           },
           "unit": "none"
         },
@@ -615,7 +797,7 @@
         "h": 3,
         "w": 5,
         "x": 4,
-        "y": 12
+        "y": 13
       },
       "id": 17,
       "interval": null,
@@ -635,28 +817,41 @@
         },
         "textMode": "name"
       },
-      "pluginVersion": "7.1.4",
-      "targets": [{
-        "expr": "apcups_numtransfers",
-        "format": "time_series",
-        "instant": true,
-        "interval": "",
-        "intervalFactor": 1,
-        "legendFormat": "{{ timetransfertobattery }}",
-        "refId": "A"
-      }],
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "apcups_numtransfers{upsname=\"$upsname\"}",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{ timetransfertobattery }}",
+          "refId": "A"
+        }
+      ],
       "title": "Last Transfer To Battery",
       "type": "stat"
     },
     {
-      "aliasColors": {},
+      "aliasColors": {
+        "Percent": "green",
+        "Watts": "rgba(0, 0, 0, 0)"
+      },
       "bars": true,
       "dashLength": 10,
       "dashes": false,
       "datasource": null,
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "custom": {},
+          "unit": "none"
         },
         "overrides": []
       },
@@ -666,7 +861,7 @@
         "h": 6,
         "w": 15,
         "x": 9,
-        "y": 12
+        "y": 13
       },
       "hiddenSeries": false,
       "id": 4,
@@ -675,7 +870,7 @@
         "current": false,
         "max": false,
         "min": false,
-        "show": false,
+        "show": true,
         "total": false,
         "values": false
       },
@@ -683,24 +878,50 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.4",
+      "pluginVersion": "7.3.6",
       "pointradius": 1,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [],
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:583",
+          "alias": "Percent",
+          "yaxis": 2
+        }
+      ],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-        "expr": "apcups_load_percent",
-        "format": "time_series",
-        "instant": false,
-        "interval": "",
-        "intervalFactor": 2,
-        "legendFormat": "",
-        "refId": "A"
-      }],
+      "targets": [
+        {
+          "expr": "apcups_load_percent{upsname=\"$upsname\"}",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 3,
+          "legendFormat": "Percent",
+          "refId": "A"
+        },
+        {
+          "expr": "apcups_nominal_power_watts{upsname=\"$upsname\"}*(apcups_load_percent{upsname=\"$upsname\"}/100)",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 3,
+          "legendFormat": "Watts",
+          "refId": "B"
+        }
+      ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
@@ -719,21 +940,24 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
-          "format": "percent",
-          "label": null,
+      "yaxes": [
+        {
+          "$$hashKey": "object:297",
+          "format": "none",
+          "label": "Watts",
           "logBase": 1,
           "max": null,
           "min": null,
           "show": true
         },
         {
-          "format": "short",
-          "label": null,
+          "$$hashKey": "object:298",
+          "format": "none",
+          "label": "Percent",
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": false
+          "show": true
         }
       ],
       "yaxis": {
@@ -747,20 +971,24 @@
       "fieldConfig": {
         "defaults": {
           "custom": {},
-          "mappings": [{
-            "id": 0,
-            "op": "=",
-            "text": "N/A",
-            "type": 1,
-            "value": "null"
-          }],
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
           "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
-            "steps": [{
-              "color": "green",
-              "value": null
-            }]
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
           },
           "unit": "none"
         },
@@ -770,7 +998,7 @@
         "h": 3,
         "w": 4,
         "x": 0,
-        "y": 15
+        "y": 16
       },
       "id": 16,
       "interval": null,
@@ -790,16 +1018,25 @@
         },
         "textMode": "name"
       },
-      "pluginVersion": "7.1.4",
-      "targets": [{
-        "expr": "apcups_numtransfers",
-        "format": "time_series",
-        "instant": true,
-        "interval": "",
-        "intervalFactor": 2,
-        "legendFormat": "{{lasttransfer}}",
-        "refId": "A"
-      }],
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "apcups_numtransfers{upsname=\"$upsname\"}",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "{{lasttransfer}}",
+          "refId": "A"
+        }
+      ],
       "title": "Transfer Reason",
       "type": "stat"
     },
@@ -809,20 +1046,24 @@
       "fieldConfig": {
         "defaults": {
           "custom": {},
-          "mappings": [{
-            "id": 0,
-            "op": "=",
-            "text": "N/A",
-            "type": 1,
-            "value": "null"
-          }],
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
           "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
-            "steps": [{
-              "color": "green",
-              "value": null
-            }]
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
           },
           "unit": "none"
         },
@@ -832,7 +1073,7 @@
         "h": 3,
         "w": 5,
         "x": 4,
-        "y": 15
+        "y": 16
       },
       "id": 18,
       "interval": null,
@@ -852,14 +1093,23 @@
         },
         "textMode": "name"
       },
-      "pluginVersion": "7.1.4",
-      "targets": [{
-        "expr": "apcups_numtransfers",
-        "instant": true,
-        "interval": "",
-        "legendFormat": "{{timetransferfrombattery}}",
-        "refId": "B"
-      }],
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "apcups_numtransfers{upsname=\"$upsname\"}",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{timetransferfrombattery}}",
+          "refId": "B"
+        }
+      ],
       "title": "Last Transfer From Battery",
       "type": "stat"
     },
@@ -881,7 +1131,7 @@
         "h": 7,
         "w": 16,
         "x": 0,
-        "y": 18
+        "y": 19
       },
       "hiddenSeries": false,
       "id": 3,
@@ -898,17 +1148,28 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
-      "pluginVersion": "7.1.4",
+      "pluginVersion": "7.3.6",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
-      "targets": [{
-          "expr": "apcups_line_volts",
+      "targets": [
+        {
+          "expr": "apcups_line_volts{upsname=\"$upsname\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -916,7 +1177,7 @@
           "refId": "A"
         },
         {
-          "expr": "apcups_nom_input_volts",
+          "expr": "apcups_nom_input_volts{upsname=\"$upsname\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -942,7 +1203,8 @@
         "show": true,
         "values": []
       },
-      "yaxes": [{
+      "yaxes": [
+        {
           "format": "volt",
           "label": null,
           "logBase": 1,
@@ -970,17 +1232,20 @@
       "fieldConfig": {
         "defaults": {
           "custom": {},
-          "mappings": [{
-            "id": 0,
-            "op": "=",
-            "text": "N/A",
-            "type": 1,
-            "value": "null"
-          }],
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
           "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
-            "steps": [{
+            "steps": [
+              {
                 "color": "#d44a3a",
                 "value": null
               },
@@ -989,7 +1254,7 @@
                 "value": 2
               },
               {
-                "color": "#299c46",
+                "color": "green",
                 "value": 5
               }
             ]
@@ -1000,9 +1265,9 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 6,
-        "x": 17,
-        "y": 18
+        "w": 3,
+        "x": 16,
+        "y": 19
       },
       "id": 2,
       "interval": null,
@@ -1022,15 +1287,24 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.1.4",
-      "targets": [{
-        "expr": "apcups_line_volts",
-        "format": "time_series",
-        "interval": "",
-        "intervalFactor": 2,
-        "legendFormat": "",
-        "refId": "A"
-      }],
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "apcups_line_volts{upsname=\"$upsname\"}",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
       "title": "Line Voltage",
       "type": "stat"
     },
@@ -1040,17 +1314,95 @@
       "fieldConfig": {
         "defaults": {
           "custom": {},
-          "mappings": [{
-            "id": 0,
-            "op": "=",
-            "text": "N/A",
-            "type": 1,
-            "value": "null"
-          }],
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
           "nullValueMode": "connected",
           "thresholds": {
             "mode": "absolute",
-            "steps": [{
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 19,
+        "y": 19
+      },
+      "id": 19,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "apcups_nominal_power_watts{upsname=\"$upsname\"}*(avg_over_time(apcups_load_percent{upsname=\"$upsname\"}[24h])/100)",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Average UPS Load (Last 24hs)",
+      "type": "stat"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
                 "color": "#d44a3a",
                 "value": null
               },
@@ -1059,7 +1411,7 @@
                 "value": 2
               },
               {
-                "color": "#299c46",
+                "color": "green",
                 "value": 5
               }
             ]
@@ -1069,10 +1421,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
-        "w": 6,
-        "x": 17,
-        "y": 21
+        "h": 4,
+        "w": 3,
+        "x": 16,
+        "y": 22
       },
       "id": 14,
       "interval": null,
@@ -1092,16 +1444,101 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "7.1.4",
-      "targets": [{
-        "expr": "apcups_nom_input_volts",
-        "format": "time_series",
-        "interval": "",
-        "intervalFactor": 2,
-        "legendFormat": "",
-        "refId": "A"
-      }],
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "apcups_nom_input_volts{upsname=\"$upsname\"}",
+          "format": "time_series",
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
       "title": "Nominal Voltage",
+      "type": "stat"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 2,
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 19,
+        "y": 22
+      },
+      "id": 20,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.3.6",
+      "scopedVars": {
+        "upsname": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        }
+      },
+      "targets": [
+        {
+          "expr": "((apcups_nominal_power_watts{upsname=\"$upsname\"}*(avg_over_time(apcups_load_percent{upsname=\"$upsname\"}[24h])/100) * 24 * 30)/1000) * $KWH_Cost",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Estimated  Monthly Cost",
       "type": "stat"
     }
   ],
@@ -1110,10 +1547,74 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "0.7915311",
+          "value": "0.7915311"
+        },
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "KWH_Cost",
+        "options": [
+          {
+            "selected": true,
+            "text": "0.7915311",
+            "value": "0.7915311"
+          }
+        ],
+        "query": "0.7915311",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": true,
+          "text": "Internet",
+          "value": "Internet"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(apc_status_numeric, upsname)",
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": "upsname",
+        "multi": false,
+        "name": "upsname",
+        "options": [
+          {
+            "selected": true,
+            "text": "Internet",
+            "value": "Internet"
+          },
+          {
+            "selected": false,
+            "text": "OdroidN2",
+            "value": "OdroidN2"
+          }
+        ],
+        "query": "label_values(apc_status_numeric, upsname)",
+        "refresh": 0,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
@@ -1144,5 +1645,5 @@
   "timezone": "",
   "title": "APC UPS Monitoring",
   "uid": "Yr60EwvGk",
-  "version": 7
+  "version": 1
 }
