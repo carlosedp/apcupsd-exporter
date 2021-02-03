@@ -12,6 +12,7 @@ comma = ,
 
 all: $(PLATFORMS)
 
+binaries: $(PLATFORMS)
 $(PLATFORMS):
 	GOOS=$(os) GOARCH=$(arch) CGO_ENABLED=0 go build -a -installsuffix cgo -ldflags '-s -w -extldflags "-static"' -o ${APP}-$(os)-$(arch)
 
